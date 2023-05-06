@@ -13,7 +13,6 @@ def update(cli):
     cli.processevents()
 
 def msg_(cli,touser,msg):
-    print(msg)
     code = cli.dialogmsg(touser, ' '.join(msg).encode())
     if code == 0:
         return '[+] Sent!'
@@ -99,7 +98,10 @@ def select(cli,username):
                 print('[-] Please provide a username')
             else:
                 for msg in msgs:
-                    print('[+] ' + msg[1].decode() + ': ' + msg[2].decode())
+                    try:
+                        print('[+] ' + msg[1].decode() + ': ' + msg[2].decode())
+                    except:
+                        pass
                     
         elif cmd == 'msg':
             if username.startswith(b'd'):
