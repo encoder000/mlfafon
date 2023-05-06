@@ -50,7 +50,10 @@ class mlaffon:
 
     def auth(self):
         self.connection.send(sectors.write_sectors([self.username, self.mysess[0].save_pkcs1()]))
-        self.session_key = aes.aes(sectors.bytes_to_int(rsa.decrypt(self.recv(), self.mysess[1])))
+        info = self.recv()
+        if info == b'\x00':
+            return -1
+        self.session_key = aes.aes(sectors.bytes_to_int(rsa.decrypt(info, self.mysess[1])))
         try:
             chk = self.recv()
             self.send(chk + b'1')
