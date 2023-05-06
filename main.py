@@ -1,5 +1,6 @@
 from main_full.connection import get_server_ip, connect_to_server
 from main_full.commands import handle_command
+from main_full.commands import update
 from main_full.helpers import create_program_data_folder, get_command
 
 def main():
@@ -9,6 +10,7 @@ def main():
         cli = connect_to_server(ip)
         while True:
             try:
+                update(cli)
                 cmd, dat = get_command('[+] Command: ')
                 handle_command(cmd, dat, cli)
             except Exception as e:
