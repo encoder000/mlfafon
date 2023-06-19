@@ -2,7 +2,7 @@
 
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-orange.svg)](https://opensource.org/licenses/) [![Download](https://img.shields.io/badge/download-29d643)](http://github.com/encoder000/mlfafon/releases) [![donate](https://img.shields.io/badge/donate-1d93cf)](https://www.youtube.com/watch?v=1GrOo3SccEY)
 
-The open source private messanger. Everybody can make their own server and start secrtet communication!
+The open source private messanger. Everybody can make their own server and start secret communication!
 
 The mlfafon files are at releases!
 
