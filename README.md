@@ -20,5 +20,5 @@ pip3 install -r requirements.txt
 
 
 
-Guide: https://telegra.ph/Mlfafon-guide-06-16
+User guide: https://telegra.ph/Mlfafon-guide-06-16
 
