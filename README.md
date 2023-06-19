@@ -1,7 +1,6 @@
 # Mlfafon
 
-[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/) [[!releases](https://img.shields.io/badge/download-f0f0f0)](http://github.com/encoder000/mlfafon/releases)[![donate](https://img.shields.io/badge/donate-0f0f0f)](https://www.youtube.com/watch?v=1GrOo3SccEY)]
-
+[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/) [![GPLv3 License](https://img.shields.io/badge/download-ff0000)](http://github.com/encoder000/mlfafon/releases) [![GPLv3 License](https://img.shields.io/badge/donate-00ff00)](https://www.youtube.com/watch?v=1GrOo3SccEY)
 
 The open source private messanger. Everybody can make their own server and start secrtet communication!
 
