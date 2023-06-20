@@ -21,7 +21,7 @@ Or
 ```
 apt install python3 -y
 apt install python3-pip -y
-apt install git
+apt install git -y
 git clone https://github.com/encoder000/mlfafon
 cd mlfafon
 pip3 install -r requirements.txt
