@@ -3,7 +3,7 @@ import shutil
 import os
 import sys
 
-ver = '52'
+ver = '53'
 n = requests.get('https://raw.githubusercontent.com/encoder000/mlfafon/main/newest.txt?').text[:-1]
 
 if int(ver,16) < int(n,16):
