@@ -18,14 +18,14 @@ pip3 install -r requirements.txt
 ```
 
 Or
-'''
+```
 apt install python3 -y
 apt install python3-pip -y
 apt install git
 git clone https://github.com/encoder000/mlfafon
 cd mlfafon
 pip3 install -r requirements.txt
-'''
+```
 
 User guide: https://telegra.ph/Mlfafon-guide-06-16
 
