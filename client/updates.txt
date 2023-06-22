@@ -1,0 +1,5 @@
+
+		Mlfafon 5.4 updates!
+		We changed aes encryption mode, so your sessions from older mlfafon versions won't work!
+		Use session_fixer.py to fix them!
+		Also now you will see updates!

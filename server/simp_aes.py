@@ -18,15 +18,21 @@ def aes_full_encrypt(aes_,data:bytes):
     out = []
     data = pkcs7padding(data,16)
     for i in range(0,len(data),16):
-        out.extend(aes_.enc_once([*data[i:i+16]]))
+        out.extend(aes_.enc_once(list_xor(i,[*data[i:i+16]])))
     return bytes(out)
 
 def aes_full_decrypt(aes_,data:bytes):
     out = []
     for i in range(0,len(data),16):
-        out.extend(aes_.dec_once([*data[i:i+16]]))
+        out.extend(list_xor(i,aes_.dec_once([*data[i:i+16]])))
     return pkcs7unpadding(bytes(out))
 
+def list_xor(i_,list_):
+    i_ = i_% 340282366920938463463374607431768211456
+    i_ = list(int.to_bytes(i_,16,'big'))
+    for i in range(len(list_)):
+        list_[i] ^= i_[i]
+    return list_
 
 def get_aes_session_password(key):
     return int(hashlib.sha256(key+b'salt').hexdigest(),16)
@@ -46,3 +52,4 @@ def bit_unpadding(data:bytes):
 
 def get_chat_key(pass_):
     return int(hashlib.sha256(hashlib.md5(pass_*2+b'salt').hexdigest().encode()).hexdigest(),16)%340282366920938463463374607431768211456
+

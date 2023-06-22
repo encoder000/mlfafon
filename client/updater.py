@@ -3,7 +3,10 @@ import shutil
 import os
 import sys
 
-ver = '53'
+if os.path.exists('updates.txt'):
+    print(open('updates.txt').read())
+    
+ver = '54'
 n = requests.get('https://raw.githubusercontent.com/encoder000/mlfafon/main/newest.txt?').text[:-1]
 
 if int(ver,16) < int(n,16):
