@@ -31,7 +31,7 @@ class User:
             print('[-] You entered wrong passcode!!!')
             time.sleep(3)
         self.keys = sessions.get_session(data,password)
-        self.conn = session_level.session()
+        self.conn = session_level.session(proxy=session_level.getproxy())
         self.conn.connect(ip,2025)
         self.session_key = b''
         self.username = username.encode()

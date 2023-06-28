@@ -1,14 +1,57 @@
-import socket
+import socks
 import sectors
+import requests
+import platform
+import time
+import sys
 
+def tor_port():
+    if 'wind' in platform.system().lower():
+        tor_port = '9150'
+    else:
+        tor_port = '9050'
+
+    return tor_port
+
+def check_tor():
+    try:
+        s = socks.socksocket()
+        s.bind(('127.0.0.1',int(tor_port())))
+        return False
+    except Exception as e:
+        return True
+        
+def tor_ip():
+    prxy = {'http':'socks5://127.0.0.1:'+tor_port()
+            ,'https':'socks5://127.0.0.1:'+tor_port()}
+    return requests.get('https://icanhazip.com',proxies=prxy).text[:-1]
+
+def getproxy():
+    import proxyconf
+    if proxyconf.use_tor:
+        if not check_tor():
+            print('''[-] TOR is turned off. Plz run:
+[!] Orbot if you use android;
+[!] Tor browser if you use windows;
+[!] Tor service if you use linux.''')
+            time.sleep(5)
+            sys.exit()
+        return ('127.0.0.1',int(tor_port()))
+    elif proxyconf.use_socks5:
+        return proxyconf.socks5_prox
+    
+    return None
+    
 class session:
-    def __init__(self,connection=b'',ip=''):
+    def __init__(self,connection=b'',ip='',proxy=None):
         if not ip:
             self.ip = '0.0.0.0'
         else:
             self.ip = ip
         self.connection = connection
-        self.sock = socket.socket()
+        self.sock = socks.socksocket()
+        if proxy:
+            self.sock.setproxy(socks.PROXY_TYPE_SOCKS5,*proxy)
         
 
     def recv(self):
