@@ -32,3 +32,5 @@ User guide: https://telegra.ph/Mlfafon-guide-06-16
 Our Telegram channel: https://t.me/mlfafon
 
 Our site: http://mlfafon.ddns.net
+
+Mlfafon server list: https://telegra.ph/Serverlist-06-29
