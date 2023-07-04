@@ -32,29 +32,31 @@ ip = input('[?] Ip(default 185.117.155.43): ')
 
 if not ip:
     ip = '185.117.155.43'
-    
+
+if not os.path.exists('datadir'):
+    os.mkdir('datadir')
+if not os.path.exists('datadir/'+ip):
+    os.mkdir('datadir/'+ip)
 accounts = os.listdir('datadir/'+ip+'/')
 
 seed = None
 
-if len(accounts)>0:
-    v0='[0] Make new account'
-    v1='[1] Recover by seed phrase'
+v0='[0] Make new account'
+v1='[1] Recover by seed phrase'
     
-    print(GREEN+v0+'\n'+v1+'\n'+'\n'.join([f'[{e+2}] Log in as '+i for e,i in enumerate(accounts)])+WHITE)
-    variant = int(input('[?] Select variant : '))
+print(GREEN+v0+'\n'+v1+'\n'+'\n'.join([f'[{e+2}] Log in as '+i for e,i in enumerate(accounts)])+WHITE)
+variant = int(input('[?] Select variant : '))
     
-    if variant > 1:
-        username = accounts[variant]
+if variant == 0:
+    username = input('[?] Username: ')
         
-    elif variant == 0:
-        username = input('[?] Username: ')
+elif variant == 1:
+    seed = input('[?] Seed: ')
+    username = input('[?] Username: ')
+    print('[+] Run update after recovering an account!')
         
-    elif variant == 1:
-        seed = input('[?] Seed: ')
-        username = input('[?] Username: ')
-        print('[+] Run update after recovering an account!')
-        
+else:
+    username = accounts[variant-2]
     
 usr = client.User(ip,username,input('[?] Password: ').encode(),seed)
 if usr.seed:
