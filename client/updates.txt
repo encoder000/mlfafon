@@ -1,5 +1,6 @@
 
-		Mlfafon5.5 updates
-	We made custom proxy settings!!!
-	You can connect over tor or your socks5 proxy;
-	More info at: https://telegra.ph/Mlfafon55-proxy-settings-06-28
+		Mlfafon5.6 updates
+	We made seed phrases!
+	Now you can recover your account
+	And now you can select your account in main menu!
+	

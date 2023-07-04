@@ -3,6 +3,7 @@ import updater
 import client
 import os
 import platform
+import keygen
 
 colorama.init()
 WHITE = colorama.Fore.WHITE
@@ -27,14 +28,44 @@ def check_args(args,l):
         return 1
     return 0
 
-usr = client.User(input('[+] Ip(default 185.117.155.43): '),input('[+] Username: '),input('[+] Password: ').encode())
+ip = input('[?] Ip(default 185.117.155.43): ')
+
+if not ip:
+    ip = '185.117.155.43'
+    
+accounts = os.listdir('datadir/'+ip+'/')
+
+seed = None
+
+if len(accounts)>0:
+    v0='[0] Make new account'
+    v1='[1] Recover by seed phrase'
+    
+    print(GREEN+v0+'\n'+v1+'\n'+'\n'.join([f'[{e+2}] Log in as '+i for e,i in enumerate(accounts)])+WHITE)
+    variant = int(input('[?] Select variant : '))
+    
+    if variant > 1:
+        username = accounts[variant]
+        
+    elif variant == 0:
+        username = input('[?] Username: ')
+        
+    elif variant == 1:
+        seed = input('[?] Seed: ')
+        username = input('[?] Username: ')
+        print('[+] Run update after recovering an account!')
+        
+    
+usr = client.User(ip,username,input('[?] Password: ').encode(),seed)
+if usr.seed:
+    print('[+] Your seed phrase is "'+usr.seed+'". You can recover your session using it!')
 code = usr.auth()
 
 if code == b'\x01':
     print(RED+'[-] This username is taken. Try to change it')
     
 while True:
-    cmd = input('[+] Cmd: ').split()
+    cmd = input('[?] Cmd: ').split()
     if len(cmd) > 0:
         cmd,args = cmd[0],cmd[1:]
         if cmd == 'help':

@@ -87,7 +87,6 @@ class User:
                 #5 - buff_lenght
                 #6 - read_buff
                 
-                print(data[0])
                 if data[0] == b'\x00':
                     username,chathash = data[1], data[2]
                     if polylogs.find(0,username) == -1:

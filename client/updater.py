@@ -6,7 +6,7 @@ import sys
 if os.path.exists('updates.txt'):
     print(open('updates.txt').read())
     
-ver = '55'
+ver = '56'
 n = requests.get('https://raw.githubusercontent.com/encoder000/mlfafon/main/newest.txt?').text[:-1]
 
 if int(ver,16) < int(n,16):

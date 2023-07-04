@@ -3,6 +3,7 @@ import rsa
 import aes
 import sectors
 import lz4.frame
+import keygen
 
 def get_session(data, key):
     aes_class = aes.aes(get_aes_session_password(key), 256)
@@ -12,10 +13,13 @@ def get_session(data, key):
     key_pair = tuple(key_pair)
     return key_pair
 
-def gen_session(key):
+def gen_session(key,seed=None):
+    if not seed:
+        seed = keygen.genseed()
+    keygen.setseed(seed)
     aes_class = aes.aes(get_aes_session_password(key), 256)
     my_key_pair = rsa.newkeys(4096)
     acc_pubkey, acc_privkey = my_key_pair
     acc_pubkey = acc_pubkey.save_pkcs1()
     acc_privkey = acc_privkey.save_pkcs1()
-    return aes_full_encrypt(aes_class, lz4.frame.compress(sectors.write_sector(acc_pubkey) + sectors.write_sector(acc_privkey)))
+    return aes_full_encrypt(aes_class, lz4.frame.compress(sectors.write_sector(acc_pubkey) + sectors.write_sector(acc_privkey))),seed

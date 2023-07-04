@@ -13,46 +13,51 @@ def gen_chathash(passwd):
     return hashlib.sha256(passwd*3+b'salt').hexdigest().encode()
     
 class User:
-    def __init__(self,ip,username,password):
-        if not ip:
-            ip = '185.117.155.43'
-            
-        if not os.path.exists(username):
-            os.mkdir(username)
+    def __init__(self,ip,username,password,seed=None):
+        self.seed = seed
+        self.datadir = 'datadir/'+ip+'/'
+        dirs = ['datadir',self.datadir,self.datadir+username]
 
-        if not os.path.exists(username+'/'+username):
+        for i in dirs:
+            if not os.path.exists(i):
+                os.mkdir(i)
+
+        if not os.path.exists(self.datadir+username+'/'+username):
             print('[!] Session generation is started! It can take >10 mins!')
-            data = sessions.gen_session(password)
-            open(username+'/'+username,'wb').write(data)
-        data = open(username+'/'+username,'rb').read()    
+            data,self.seed = sessions.gen_session(password,seed)
+            open(self.datadir+username+'/'+username,'wb').write(data)
+        data = open(self.datadir+username+'/'+username,'rb').read()
+        
         try:
             self.keys = sessions.get_session(data,password)
         except:
             print('[-] You entered wrong passcode!!!')
             time.sleep(3)
+            
         self.keys = sessions.get_session(data,password)
         self.conn = session_level.session(proxy=session_level.getproxy())
         self.conn.connect(ip,2025)
         self.session_key = b''
         self.username = username.encode()
+        
         try:
             self.load(password)
         except:
             filenames = ['initinf','messages','keybase','rejected','invites','rn']
             for i in filenames:
                 try:
-                    os.remove(f'{self.username.decode()}/{i}.txt')
+                    os.remove(f'{self.datadir}{self.username.decode()}/{i}.txt')
                 except Exception as e:
                     print('[-]',e)
-                self.load(password)
+            self.load(password)
                 
     def load(self,password):
         username = self.username.decode()
-        self.initinf = sectors.sectorstype(username+'/initinf.txt',password)
-        self.messages = sectors.sectorstype(username+'/messages.txt',password)
-        self.keybase = sectors.sectorstype(username+'/keybase.txt',password)
-        self.rejected = sectors.sectorstype(username+'/rejected.txt')
-        self.invites = sectors.sectorstype(username+'/invites.txt',password)
+        self.initinf = sectors.sectorstype(self.datadir+username+'/initinf.txt',password)
+        self.messages = sectors.sectorstype(self.datadir+username+'/messages.txt',password)
+        self.keybase = sectors.sectorstype(self.datadir+username+'/keybase.txt',password)
+        self.rejected = sectors.sectorstype(self.datadir+username+'/rejected.txt')
+        self.invites = sectors.sectorstype(self.datadir+username+'/invites.txt',password)
         self.initinf.load()
         self.messages.load()
         self.keybase.load()
@@ -170,11 +175,11 @@ class User:
 
     def read_buffer(self):
         my_username = self.username.decode()
-        if os.path.exists(my_username+'/rn.txt'):
-            rn = int(open(my_username+'/rn.txt','r').read())
+        if os.path.exists(self.datadir+my_username+'/rn.txt'):
+            rn = int(open(self.datadir+my_username+'/rn.txt','r').read())
         else:
             rn = 0
-            open(my_username+'/rn.txt','w').write('0')
+            open(self.datadir+my_username+'/rn.txt','w').write('0')
             
         bl = self.mybuflength()
         if bl-1 >= rn:
@@ -223,7 +228,7 @@ class User:
             print('\n')
             self.messages.save()
             
-        open(my_username+'/rn.txt','w').write(str(bl-1))
+        open(self.datadir+my_username+'/rn.txt','w').write(str(bl-1))
 
     def get_messages(self,username):
         messages_secnum = self.messages.find(0,username)
