@@ -12,7 +12,7 @@ apt install unzip -y
 apt install wget -y
 apt install python3 -y
 apt install python3-pip -y
-wget https://github.com/encoder000/mlfafon/releases/download/5.3/mlfafon5.6.zip
+wget https://github.com/encoder000/mlfafon/releases/download/5.6/mlfafon5.6.zip
 unzip mlfafon5.6.zip
 pip3 install -r requirements.txt
 ```
