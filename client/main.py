@@ -33,10 +33,11 @@ ip = input('[?] Ip(default 185.117.155.43): ')
 if not ip:
     ip = '185.117.155.43'
 
-if not os.path.exists('datadir'):
-    os.mkdir('datadir')
-if not os.path.exists('datadir/'+ip):
-    os.mkdir('datadir/'+ip)
+dirs = ['datadir','datadir/'+ip]
+for i in dirs:
+    if not os.path.exists(i):
+        os.mkdir(i)
+        
 accounts = os.listdir('datadir/'+ip+'/')
 
 seed = None
@@ -58,13 +59,14 @@ elif variant == 1:
 else:
     username = accounts[variant-2]
     
-usr = client.User(ip,username,input('[?] Password: ').encode(),seed)
+usr = client.User(ip,username,input('[?] Password: ').encode(),'datadir/'+ip+'/',seed)
 if usr.seed:
     print('[+] Your seed phrase is "'+usr.seed+'". You can recover your session using it!')
 code = usr.auth()
 
-if code == b'\x01':
-    print(RED+'[-] This username is taken. Try to change it')
+
+if not usr.checkcode(code):
+    print(RED+'[-] '+usr.deccode(usr.auth,code)+WHITE)
     
 while True:
     cmd = input('[?] Cmd: ').split()
@@ -93,30 +95,26 @@ while True:
                 continue
             username,password = args[0],args[1]
             code = usr.join_chat(username.encode(),password.encode())
-            if code == b'\x01':
-                print(RED+'[-] Bad chat hash'+WHITE)
-            elif code == b'\x02':
-                print(RED+'[-] Chat doesn\'t exist'+WHITE)
+            if not usr.checkcode(code):
+                print(RED+'[-] '+usr.deccode(usr.join_chat,code)+WHITE)
                 
         elif cmd == 'mkchat':
             if check_args(args,2):
                 continue
             username,password = args[0],args[1]
             code = usr.mkchat(username.encode(),password.encode())
-            if code == b'\x01':
-                print(RED+'[-] Chat exists'+WHITE)
+            if not usr.checkcode(code):
+                print(RED+'[-] '+usr.deccode(usr.mkchat,code)+WHITE)
+               
                 
         elif cmd == 'invite':
             if check_args(args,2):
                 continue
             u0,u1 = args[0],args[1]
             code = usr.send_invite(u0.encode(),u1.encode())
-            if code == b'\x01':
-                print(RED+'[-] Invalid chathash/chat'+WHITE)
-            elif code == b'\x02':
-                print(RED+'[-] Invalid user'+WHITE)
-            elif code == b'\x03':
-                print(RED+'[-] Already sent'+WHITE)
+            if not usr.checkcode(code):
+                print(RED+'[-] '+usr.deccode(usr.send_invite,code)+WHITE)
+               
 
         elif cmd == 'update':
             usr.read_buffer()
@@ -139,16 +137,14 @@ while True:
                             break
                         else:
                             code = usr.send_message(chat_username,b'exit')
-                            if code == b'\x01':
-                                print(RED+'[-] You r not in chat'+WHITE)
-                            elif code == b'\x02':
-                                print(RED+'[-] Invalid chat'+WHITE)
+                            if not usr.checkcode(code):
+                                print(RED+'[-] '+usr.deccode(usr.send_message,code)+WHITE)
+               
                     else:
                         code = usr.send_message(chat_username,cmd.encode())
-                        if code == b'\x01':
-                            print(RED+'[-] You r not in chat'+WHITE)
-                        elif code == b'\x02':
-                            print(RED+'[-] Invalid chat'+WHITE)
+                        if not usr.checkcode(code):
+                            print(RED+'[-] '+usr.deccode(usr.send_message,code)+WHITE)
+               
 
         elif cmd == 'invites':
             print(GREEN+'\n'.join([f'[{e}] {ascer(i)}' for e,i in enumerate(usr.invites.fields(0))])+WHITE)

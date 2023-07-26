@@ -8,24 +8,31 @@ import os
 import message as msglib
 import time
 import loading
+import keygen
 
 def gen_chathash(passwd):
     return hashlib.sha256(passwd*3+b'salt').hexdigest().encode()
     
 class User:
-    def __init__(self,ip,username,password,seed=None):
+    def __init__(self,ip,username,password,datadir,seed=None):
         self.seed = seed
-        self.datadir = 'datadir/'+ip+'/'
-        dirs = ['datadir',self.datadir,self.datadir+username]
-
-        for i in dirs:
-            if not os.path.exists(i):
-                os.mkdir(i)
+        self.datadir = datadir
+        #dirs = ['datadir',self.datadir,self.datadir+username]
+        #
+        #for i in dirs:
+        #    if not os.path.exists(i):
+        #        os.mkdir(i)
+        # Теперь папкой с сессией управляет __main__
+        user_dir = self.datadir+'/'+username
+        if not os.path.exists(user_dir):
+            os.mkdir(user_dir)
 
         if not os.path.exists(self.datadir+username+'/'+username):
             print('[!] Session generation is started! It can take >10 mins!')
             data,self.seed = sessions.gen_session(password,seed)
+            rsa.randnum.read_random_bits = keygen.seed_read_random_bits_normal #Для безопасности на всякий случай
             open(self.datadir+username+'/'+username,'wb').write(data)
+            
         data = open(self.datadir+username+'/'+username,'rb').read()
         
         try:
@@ -173,30 +180,38 @@ class User:
         else:
             return out
 
-    def read_buffer(self):
+    def read_buffer(self,show_loading=True):
         my_username = self.username.decode()
         if os.path.exists(self.datadir+my_username+'/rn.txt'):
             rn = int(open(self.datadir+my_username+'/rn.txt','r').read())
         else:
             rn = 0
             open(self.datadir+my_username+'/rn.txt','w').write('0')
-            
+
+        eventlist = []
         bl = self.mybuflength()
-        if bl-1 >= rn:
+        if bl >= rn:
             
             for i in range(bl-rn):
                 try:
-                    if bl-rn-1 > 5:
+                    if bl-rn-1 > 5 and show_loading:
                         loading_ = loading.load(bl-rn-1,' packages loaded')
                         loading_.num=i
                         loading_.write()
+                    
                     buff = sectors.read_sectors(self.getbuf(rn+i))
                     if buff[0] == b'\x00':
-                        chat_username,enc_pass = buff[1],buff[2]
+                        chat_username,enc_pass,author_username = buff[1],buff[2],buff[3]
                         enc_pass = rsa.decrypt(enc_pass,self.keys[1])
                         if self.invites.find(0,chat_username) == -1 and not self.check_my_chat(chat_username):
                             if self.rejected.find(0,chat_username) == -1:
-                                self.invites.add([chat_username,enc_pass])
+                                eventlist.append({
+                                    'type':b'\x00',
+                                    'chat_username':chat_username,
+                                    'key':enc_pass,
+                                    'author':author_username
+                                    })
+                                self.invites.add([chat_username,enc_pass,author_username])
                                 self.invites.save()
                         else:
                             self.join_chat(chat_username,enc_pass)
@@ -211,8 +226,20 @@ class User:
                         user_username = sectors.read_sectors(message)[3]
                         author_key = self.getpubkey(user_username)
 
-                        message_check = msglib.message(message,author_key=rsa.PublicKey.load_pkcs1(author_key)).check()
+                        message_ = msglib.message(message,author_key=rsa.PublicKey.load_pkcs1(author_key))
+                        message_check = message_.check()
                         if message_check:
+                            
+                            eventlist.append({
+                                'type':b'\x01',
+                                'author':user_username,
+                                'author_pubkey':author_key,
+                                'message':message_check[1],
+                                'id':message_.message[1],
+                                'sign':message_.message[2],
+                                'from':chat_username
+                                })
+                            
                             if messages_secnum == -1:
                                 self.messages.add([chat_username,sectors.write_sector(sectors.write_sectors(message_check))])
                             else:
@@ -225,10 +252,12 @@ class User:
                 
                 except Exception as e:
                     print('[-]',e)
-            print('\n')
             self.messages.save()
-            
-        open(self.datadir+my_username+'/rn.txt','w').write(str(bl-1))
+
+        if show_loading:
+            print('\n')
+        open(self.datadir+my_username+'/rn.txt','w').write(str(bl))
+        return eventlist
 
     def get_messages(self,username):
         messages_secnum = self.messages.find(0,username)
@@ -243,6 +272,33 @@ class User:
             return True
         else:
             return False
-        
+
+    def checkcode(self,code):
+        if not code or code == b'\x00':
+            return True
+        return False
+    
+    def deccode(self,func,code):
+        code_table={
+            'auth':{b'\x01':'This username is taken. Try to change it'},
+            'mkchat':{b'\x01':'Chat exists'},
+            'join_chat':{b'\x01':'Bad chat hash',b'\x02':'Chat doesn\'t exist'},
+            'send_invite':{b'\x01':'Invalid chathash/chat',b'\x02':'Invalid user',b'\x03':'Already sent'},
+            'getbuf':{b'\x01':'Invalid package index'},
+            'send_message':{b'\x01':'You r not in chat',b'\x02':'Invalid chat'},
+            'getpubkey':{b'\x01':'User doesn\'t exist'}
+            }
+        if not self.checkcode(code):
+            return code_table[func.__name__][code]
+        return 'ok'
+
+    def handle_buffer(self):
+        while True:
+            time.sleep(0.2)
+            buf = []
+            while buf == []:
+                buf = self.read_buffer(False)
+            for event in buf:
+                yield event
                         
                         

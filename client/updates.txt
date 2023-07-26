@@ -1,6 +1,6 @@
 
-		Mlfafon5.6 updates
-	We made seed phrases!
-	Now you can recover your account
-	And now you can select your account in main menu!
+		Mlfafon5.7 updates
+	We updated seed phrases generation algorithm
+	We added new funcs to client.py. Now you easly can make your userbots!
+	We optimized main.py
 	

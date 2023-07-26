@@ -34,11 +34,10 @@ class User:
         if self.recved >= 30:
             self.recved = 0
             time.sleep(4)
-            print('sleeping')
         return data
 
-    def send(self,data,l=False):
-        if l:
+    def send(self,data,array=False):
+        if array:
             data = sectors.write_sectors(data)
         if self.session_key:
             data = aes_full_encrypt(self.session_key,data)
@@ -89,6 +88,7 @@ class User:
                 
                 if data[0] == b'\x00':
                     username,chathash = data[1], data[2]
+                    print('New chat',username,chathash)
                     if polylogs.find(0,username) == -1:
                         polylogs.add([username,chathash])
                         self.send(b'\x00')
@@ -127,7 +127,7 @@ class User:
                         if polylogs.getdat(chat_secnum,1) == chathash and chat_secnum != -1 and len(enc_pass) == 512:
                             intel_field = users.intel_field_get(secnum,2)
                             if intel_field.find(1,chat_username) == -1:
-                                intel_field.add([b'\x00',chat_username,enc_pass])
+                                intel_field.add([b'\x00',chat_username,enc_pass,self.username])
                                 users.intel_field_set(secnum,2,intel_field)
                                 self.send(b'\x00')
                             else:
@@ -139,6 +139,7 @@ class User:
 
                 elif data[0] == b'\x04':
                     chat_username,message = data[1],data[2]
+                    print('message from',self.username)
                     secnum = polylogs.find(0,chat_username)
                     if secnum != -1:
                         chat_subs = sectors.read_sectors(polylogs.getdat(secnum,2))
