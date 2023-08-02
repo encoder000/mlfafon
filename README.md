@@ -31,6 +31,6 @@ User guide: https://telegra.ph/Mlfafon-guide-06-16
 
 Our Telegram channel: https://t.me/mlfafon_new
 
-Our site: http://mlfafon.online
+Our site: http://mlfafont6jhokzycgxwd5yaeiljchi5drq3x2ojqvdjw2kofjh7m7gad.onion
 
 Mlfafon server list: https://telegra.ph/Serverlist-06-29
