@@ -29,8 +29,8 @@ pip3 install -r requirements.txt
 
 User guide: https://telegra.ph/Mlfafon-guide-06-16
 
-Our Telegram channel: https://t.me/mlfafon
+Our Telegram channel: https://t.me/mlfafon_new
 
-Our site: http://mlfafon.ddns.net
+Our site: http://mlfafon.online
 
 Mlfafon server list: https://telegra.ph/Serverlist-06-29
