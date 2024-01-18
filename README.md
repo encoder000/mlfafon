@@ -29,7 +29,7 @@ pip3 install -r requirements.txt
 
 User guide: https://telegra.ph/Mlfafon-guide-06-16
 
-Our Telegram channel: https://t.me/mlfafon_new
+Our Telegram channel: https://t.me/sshosint
 
 Our site: http://mlfafont6jhokzycgxwd5yaeiljchi5drq3x2ojqvdjw2kofjh7m7gad.onion
 
